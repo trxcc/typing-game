@@ -73,7 +73,7 @@ def init():
         updateColor()
         color.append((R,G,B))
         # 坐标值
-        xx.append(random.randint(0,750))
+        xx.append(random.randint(0,760))
         yy.append(random.randint(0,300))
         speed_unit.append(random.choice([random.uniform(1,1.3), random.uniform(2,2.3)]))
         state.append(True)
@@ -92,14 +92,23 @@ def action():
         # 4.4 循环比对
         if event.type == pygame.KEYDOWN:  # 键盘按下
             # 4.5 循环遍历与按键比较
-            max_deep = 0
+            max_deep = -1
             max_idx = -1
             key = event.key
             for i in range(0,12):
                 '''
-                TODO: 
+                TODO: 键盘按下后, 判断按键是否与屏幕上未命中的字母相同, 即正在往下走的字母. 若出现多个相同的字母, 则返回屏幕中最靠下的字母的下标,
+                        将所需要返回的字母的下标储存在 max_idx 中.
+                参数: key: 当前按下的字母; 
+                     word: 屏幕上展示的字母列表(可重复), 比如, 若屏幕上此时有A, A, B, C, 
+                            则word是一个包含了两个'A', 一个'B', 一个'C'的列表(顺序未知)
+                     state: 当前字母的状态, state[i] == True时, 表示此字母 word[i] 正在下落, 未被命中; 
+                            state[i] == False时, 表示字母 word[i] 已命中, 正在上升
+                     yy: 表示字母的纵坐标, 如 yy[i] 表示字母 word[i] 的纵坐标. 且yy[i]数值越大, 字母在屏幕上的位置越靠下
+                     xx: 表示字母的横坐标, 如 xx[i] 表示字母 word[i] 的横坐标. 且xx[i]数值越大, 字母在屏幕上的位置越靠右
+                注意: i的取值在range(0, 12), 即屏幕上同一时间最多只有12个字母
                 '''
-                if event.key == word[i] and state[i] == True:
+                if key == word[i] and state[i] == True:
                     if max_deep < yy[i]:
                         max_deep = yy[i]
                         max_idx = i
@@ -128,7 +137,7 @@ def action():
             score -= 20
         elif yy[i] < -50:
             word[i] = random.randint(97,122)  # 使得word“消失”
-            xx[i] = random.randint(0,750)  # xx坐标另产生一个随机数，表现为“消失”
+            xx[i] = random.randint(0,760)  # xx坐标另产生一个随机数，表现为“消失”
                 # 使得yy坐标“消失”,yy坐标变负号，消失在屏幕看不见的位置
             # yy[i] = -random.randint(0,600)
             speed_unit[i] = random.uniform(1,2)
@@ -150,7 +159,7 @@ def paint():
     # 4.1 初始化字体
     pygame.font.init()
     # 4.2 设置字体样式 （ps: wryh.ttf是字体库的文件，该文件已经上传，下载后和项目文件放到一个文件夹中）
-    font = pygame.font.Font("arial.ttf", 50)
+    font = pygame.font.Font("arial.ttf", 40)
     # 4.3 循环迭代
     for i in range(0,12):
         
