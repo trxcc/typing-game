@@ -10,81 +10,56 @@
 2. 根据分数处理 速度问题
 3. 加速度
 """
-import gifList
-import os, sys
+
+import sys
 import pygame
 import random
+import graphic
 
 import hit
  
 tick = 16
 
 def menu():
-
     pygame.display.set_caption("Capoo Typing")
-
     while True:
-        screen.fill((255, 255, 255))
-
         action()
-
-        paint()
-
+        graphic.paint(word, color, xx, yy, score, combo)
         pygame.time.delay(tick)
-
         pygame.display.update()
 
 
 MAPX = 800
 MAPY = 600
-screen = pygame.display.set_mode((MAPX, MAPY), 0, 0)
 
+
+# word properties
 word = []
-
 color = []
-
 xx = []
 yy = []
 speed = []
-acc = 0.01 # 1 unit per tick square
 state = []
+
+
+acc = 0.01 # 1 unit per tick square
 
 score = 0
 combo = 0
 
-deep_color_lim = (192, 255)
-light_color_lim = (0, 64)
-
-sprite = []
-capooList = []
-capoo = []
-pos_capoo = (0, 400)
-
-gif = {}
-
 def init():
-    global capoo, capooList, pos_capoo, sprite
+
+    graphic.init(MAPX, MAPY)
 
     for i in range(0,12):
 
         word.append(97 + i)
-
-        color.append(get_color(rlim=deep_color_lim, glim=light_color_lim, blim=deep_color_lim))
-
+        color.append(graphic.get_not_green())
         xx.append(random.randint(200,700))
-        yy.append(random.randint(-200,100))
+        yy.append(random.randint(-50,0))
         speed.append((random.choice([random.uniform(1,1.3), random.uniform(2,2.3)]), 0))
         state.append(True)
-    for gifFile in gifList.gif_list:
-        gifName = gifFile[0]
-        print(gifName)
-        index = 1
-        gif[gifName] = []
-        while os.path.isfile(f"./pic/pic_{gifName}/{gifName}_{index}.png"):
-            gif[gifName].append(pygame.transform.scale(pygame.image.load(f"./pic/pic_{gifName}/{gifName}_{index}.png"), gifFile[1]))
-            index += 1
-    capooList = [("capoo_miss",-1), ("capoo_lazy", 0), ("capoo_easy", 10), ("capoo_crazy", 20)]
-    capoo = ["capoo_hello", 0, pos_capoo]
+    
 
 def new_word(idx, col):
     color[idx] = col
@@ -94,13 +69,16 @@ def new_word(idx, col):
     speed[idx] = (random.uniform(1,2), 0)
     state[idx] = True
 
+
 def out_of_limit(x, y):
     return (x < -50 or x > MAPX + 50) or (y < -50 or y > MAPY)
 
+
 def miss():
-    global combo, capoo
+    global combo
     combo = 0
-    capoo = ["capoo_miss", 0, pos_capoo]
+    graphic.set_capoo(["capoo_miss", 0, graphic.pos_capoo])
+
 
 def action():
     global score, combo, acc, capoo, pos_capoo
@@ -129,18 +107,15 @@ def action():
                         max_deep = yy[i]
                         max_idx = i
                 pass
-            
-            
-                
+                       
             if max_idx >= 0:
-                speed[max_idx] = hit.hit(sprite, (xx[max_idx], yy[max_idx]), speed[max_idx], acc)
-                color[max_idx] = get_color(rlim=light_color_lim, glim=deep_color_lim, blim=light_color_lim)
+                speed[max_idx] = hit.hit(graphic.sprite, (xx[max_idx], yy[max_idx]), speed[max_idx], acc)
+                color[max_idx] = graphic.get_green()
                 state[max_idx] = False
                 combo += 1
                 score += min(combo, 20)
             else:
                 miss()
-
 
     for i in range(0,12):
         yy[i] += speed[i][0]
@@ -149,48 +124,7 @@ def action():
         if out_of_limit(xx[i], yy[i]):
             if state[i]:
                 miss()
-            new_word(i, get_color(rlim=deep_color_lim, glim=light_color_lim, blim=deep_color_lim))
- 
-def paint():
-    global sprite, capoo, pos_capoo
-    pygame.font.init()
-    font = pygame.font.Font("arial.ttf", 40)
-
-    TPP = 2
-    screen.blit(gif[capoo[0]][capoo[1] // TPP], capoo[2])
-    capoo[1] += 1
-    if (capoo[1] // TPP >= len(gif[capoo[0]])):
-        capoo[1] = 0
-        for cp in capooList:
-            if combo >= cp[1]:
-                capoo = [cp[0], 0, pos_capoo]
-
-    for sp in sprite:
-        screen.blit(gif[sp[0]][sp[1] // TPP], sp[2])
-        sp[1] += 1
-        if (len(sprite) > 0):
-            sprite = [sp for sp in sprite if (sp[1] // TPP) < len(gif[sp[0]])]
-
-    for i in range(0,12):
-        fontRead = font.render(chr(word[i]-32),True,color[i])
-        scoreShow = font.render("score:%s"%score,True,(255,0,0))
-        comboShow = font.render("combo x%s"%combo, True, (255,0,0))
-
-        screen.blit(fontRead,(xx[i],yy[i]))
-
-    screen.blit(scoreShow, (20,20))
-    if combo > 0:
-        screen.blit(comboShow, (20,60))
-
-
-
-
-def get_color(rlim=(0,255), glim=(0,255), blim=(0,255)):
-    R = random.randint(rlim[0], rlim[1])
-    G = random.randint(glim[0], glim[1])
-    B = random.randint(blim[0], blim[1])
-    return (R, G, B)
-
+            new_word(i, graphic.get_not_green())
 
 
 if __name__ == '__main__':
