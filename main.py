@@ -63,8 +63,8 @@ def init():
 
 def new_word(idx, col):
     color[idx] = col
-    word[idx] = random.randint(97,122)
-    xx[idx] = random.randint(200,700)
+    word[idx] = random.randint(97, 122)
+    xx[idx] = random.randint(200, 700)
     yy[idx] = random.randint(-50, 0)
     speed[idx] = (random.uniform(1,2), 0)
     state[idx] = True
