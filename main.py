@@ -13,14 +13,15 @@
 import gifList
 import os, sys
 import pygame
-
 import random
+
+import hit
  
 tick = 16
 
 def menu():
 
-    pygame.display.set_caption("打字游戏")
+    pygame.display.set_caption("Capoo Typing")
 
     while True:
         screen.fill((255, 255, 255))
@@ -32,8 +33,11 @@ def menu():
         pygame.time.delay(tick)
 
         pygame.display.update()
- 
-screen = pygame.display.set_mode((800, 600), 0, 0)
+
+
+MAPX = 800
+MAPY = 600
+screen = pygame.display.set_mode((MAPX, MAPY), 0, 0)
 
 word = []
 
@@ -42,7 +46,7 @@ color = []
 xx = []
 yy = []
 speed = []
-acc = 0 # 1 unit per tick square
+acc = 0.01 # 1 unit per tick square
 state = []
 
 score = 0
@@ -58,9 +62,8 @@ pos_capoo = (0, 400)
 
 gif = {}
 
-
 def init():
-    global capoo, capooList, pos_capoo
+    global capoo, capooList, pos_capoo, sprite
 
     for i in range(0,12):
 
@@ -74,6 +77,7 @@ def init():
         state.append(True)
     for gifFile in gifList.gif_list:
         gifName = gifFile[0]
+        print(gifName)
         index = 1
         gif[gifName] = []
         while os.path.isfile(f"./pic/pic_{gifName}/{gifName}_{index}.png"):
@@ -81,7 +85,17 @@ def init():
             index += 1
     capooList = [("capoo_miss",-1), ("capoo_lazy", 0), ("capoo_easy", 10), ("capoo_crazy", 20)]
     capoo = ["capoo_hello", 0, pos_capoo]
-    sprite.append(["capoo_hello", 0, (400, 100)])
+
+def new_word(idx, col):
+    color[idx] = col
+    word[idx] = random.randint(97,122)
+    xx[idx] = random.randint(200,700)
+    yy[idx] = random.randint(-50, 0)
+    speed[idx] = (random.uniform(1,2), 0)
+    state[idx] = True
+
+def out_of_limit(x, y):
+    return (x < -50 or x > MAPX + 50) or (y < -50 or y > MAPY)
 
 def miss():
     global combo, capoo
@@ -119,40 +133,44 @@ def action():
             
                 
             if max_idx >= 0:
+                speed[max_idx] = hit.hit(sprite, (xx[max_idx], yy[max_idx]), speed[max_idx], acc)
                 color[max_idx] = get_color(rlim=light_color_lim, glim=deep_color_lim, blim=light_color_lim)
-                speed[max_idx] = (-3, 0)
                 state[max_idx] = False
                 combo += 1
-                score += min(combo, 10)
+                score += min(combo, 20)
             else:
                 miss()
 
 
     for i in range(0,12):
         yy[i] += speed[i][0]
+        xx[i] += speed[i][1]
         speed[i] = (speed[i][0] + acc, speed[i][1])
-        if yy[i] > 600:
-            color[i] = get_color(rlim=deep_color_lim, glim=light_color_lim, blim=deep_color_lim)
-            yy[i] = -50
-            score -= 20
-            speed[i] = (random.uniform(1,2),0)
-            miss()
-            state[i] = True
-        elif yy[i] < -50:
-            color[i] = get_color(rlim=deep_color_lim, glim=light_color_lim, blim=deep_color_lim)
-            word[i] = random.randint(97,122)
-            xx[i] = random.randint(200,700)
-            speed[i] = (random.uniform(1,2), 0)
-            state[i] = True
+        if out_of_limit(xx[i], yy[i]):
+            if state[i]:
+                miss()
+            new_word(i, get_color(rlim=deep_color_lim, glim=light_color_lim, blim=deep_color_lim))
  
- 
-"""
-第四部分:图形图案绘制区域
-"""
 def paint():
     global sprite, capoo, pos_capoo
     pygame.font.init()
     font = pygame.font.Font("arial.ttf", 40)
+
+    TPP = 2
+    screen.blit(gif[capoo[0]][capoo[1] // TPP], capoo[2])
+    capoo[1] += 1
+    if (capoo[1] // TPP >= len(gif[capoo[0]])):
+        capoo[1] = 0
+        for cp in capooList:
+            if combo >= cp[1]:
+                capoo = [cp[0], 0, pos_capoo]
+
+    for sp in sprite:
+        screen.blit(gif[sp[0]][sp[1] // TPP], sp[2])
+        sp[1] += 1
+        if (len(sprite) > 0):
+            sprite = [sp for sp in sprite if (sp[1] // TPP) < len(gif[sp[0]])]
+
     for i in range(0,12):
         fontRead = font.render(chr(word[i]-32),True,color[i])
         scoreShow = font.render("score:%s"%score,True,(255,0,0))
@@ -160,32 +178,12 @@ def paint():
 
         screen.blit(fontRead,(xx[i],yy[i]))
 
-        screen.blit(scoreShow, (20,20))
+    screen.blit(scoreShow, (20,20))
+    if combo > 0:
+        screen.blit(comboShow, (20,60))
 
-        TPP = 18
 
-        print(capoo[0])
-        screen.blit(gif[capoo[0]][capoo[1] // TPP], capoo[2])
-        capoo[1] += 1
-        if (capoo[1] // TPP >= len(gif[capoo[0]])):
-            capoo[1] = 0
-            for cp in capooList:
-                if combo >= cp[1]:
-                    capoo = [cp[0], 0, pos_capoo]
 
-        for sp in sprite:
-            screen.blit(gif[sp[0]][sp[1] // TPP], sp[2])
-            sp[1] += 1
-        
-        sprite = [sp for sp in sprite if (sp[1] // TPP) < len(gif[sp[0]])]
-
-        if combo > 0:
-            screen.blit(comboShow, (20,60))
-
- 
-"""
-第六部分:更改RGB颜色值
-"""
 
 def get_color(rlim=(0,255), glim=(0,255), blim=(0,255)):
     R = random.randint(rlim[0], rlim[1])
