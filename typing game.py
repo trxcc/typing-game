@@ -81,7 +81,7 @@ def init():
             index += 1
     capooList = [("capoo_miss",-1), ("capoo_lazy", 0), ("capoo_easy", 10), ("capoo_crazy", 20)]
     capoo = ["capoo_hello", 0, pos_capoo]
-
+    sprite.append(["capoo_hello", 0, (400, 100)])
 
 def miss():
     global combo, capoo
