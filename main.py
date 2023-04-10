@@ -17,17 +17,10 @@ import random
 import graphic
 
 import hit
- 
-tick = 16
 
-def menu():
-    pygame.display.set_caption("Capoo Typing")
-    while True:
-        action()
-        graphic.paint(word, color, xx, yy, score, combo)
-        pygame.time.delay(tick)
-        pygame.display.update()
+MAX_WORD_NUM = 5
 
+tick = 20
 
 MAPX = 800
 MAPY = 600
@@ -48,10 +41,10 @@ score = 0
 combo = 0
 
 def init():
+    global MAPX, MAPY, MAX_WORD_NUM
+    graphic.init(MAPX, MAPY, MAX_WORD_NUM)
 
-    graphic.init(MAPX, MAPY)
-
-    for i in range(0,12):
+    for i in range(0,MAX_WORD_NUM):
 
         word.append(97 + i)
         color.append(graphic.get_not_green())
@@ -62,6 +55,7 @@ def init():
     
 
 def new_word(idx, col):
+# TODO
     color[idx] = col
     word[idx] = random.randint(97,122)
     xx[idx] = random.randint(200,700)
@@ -73,6 +67,16 @@ def new_word(idx, col):
 def out_of_limit(x, y):
     return (x < -50 or x > MAPX + 50) or (y < -50 or y > MAPY)
 
+
+def hit_word(index):
+    global color, speed, state, score, combo
+# TODO
+#    color[index] = graphic.get_green()
+    speed[index] = hit.hit(graphic.sprite, (xx[index], yy[index]), speed[index])
+    state[index] = False
+
+#    combo += 1
+#    score += min(combo, 20)
 
 def miss():
     global combo
@@ -86,10 +90,9 @@ def action():
         if event.type == pygame.QUIT:
             sys.exit()
         if event.type == pygame.KEYDOWN:
-            max_deep = -1
-            max_idx = -1
+            target_index = -1
             key = event.key
-            for i in range(0,12):
+            for index in range(0,MAX_WORD_NUM):
                 '''
                 TODO: 键盘按下后, 判断按键是否与屏幕上未命中的字母相同, 即正在往下走的字母. 若出现多个相同的字母, 则返回屏幕中最靠下的字母的下标,
                         将所需要返回的字母的下标储存在 max_idx 中.
@@ -100,32 +103,34 @@ def action():
                             state[i] == False时, 表示字母 word[i] 已命中, 正在上升
                      yy: 表示字母的纵坐标, 如 yy[i] 表示字母 word[i] 的纵坐标. 且yy[i]数值越大, 字母在屏幕上的位置越靠下
                      xx: 表示字母的横坐标, 如 xx[i] 表示字母 word[i] 的横坐标. 且xx[i]数值越大, 字母在屏幕上的位置越靠右
-                注意: i的取值在range(0, 12), 即屏幕上同一时间最多只有12个字母
+                注意: i的取值在range(0, MAX_WORD_NUM), 即屏幕上同一时间最多只有MAX_WORD_NUM个字母
                 '''
-                if key == word[i] and state[i] == True:
-                    if max_deep < yy[i]:
-                        max_deep = yy[i]
-                        max_idx = i
-                pass
+                if key == word[index] and state[index]:
+                    target_index = index
                        
-            if max_idx >= 0:
-                speed[max_idx] = hit.hit(graphic.sprite, (xx[max_idx], yy[max_idx]), speed[max_idx], acc)
-                color[max_idx] = graphic.get_green()
-                state[max_idx] = False
-                combo += 1
-                score += min(combo, 20)
+            if target_index >= 0:
+                hit_word(target_index)
             else:
                 miss()
 
-    for i in range(0,12):
+    for i in range(0,MAX_WORD_NUM):
         yy[i] += speed[i][0]
         xx[i] += speed[i][1]
-        speed[i] = (speed[i][0] + acc, speed[i][1])
+# TODO
+#        speed[i] = (speed[i][0] + acc, speed[i][1])
         if out_of_limit(xx[i], yy[i]):
             if state[i]:
                 miss()
             new_word(i, graphic.get_not_green())
 
+
+def menu():
+    pygame.display.set_caption("Capoo Typing")
+    while True:
+        action()
+        graphic.paint(word, color, xx, yy, score, combo)
+        pygame.time.delay(tick)
+        pygame.display.update()
 
 if __name__ == '__main__':
     init()

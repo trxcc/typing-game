@@ -4,6 +4,7 @@ import random
 import gifList
 
 screen = None
+word_num = 0
 
 sprite = []
 capooList = []
@@ -19,8 +20,9 @@ gif = {}
 deep_color_lim = (192, 255)
 light_color_lim = (0, 64)
 
-def init(MAPX, MAPY):
-    global screen, capooList, capoo
+def init(MAPX, MAPY, MAX_WORD_NUM):
+    global screen, capooList, capoo, word_num
+    word_num = MAX_WORD_NUM
     screen = pygame.display.set_mode((MAPX, MAPY), 0, 0)
     for gifFile in gifList.gif_list:
         gifName = gifFile[0]
@@ -50,7 +52,7 @@ def get_color(rlim=(0,255), glim=(0,255), blim=(0,255)):
 
 
 def paint(word, color, xx, yy, score, combo):
-    global sprite, capoo, pos_capoo
+    global sprite, capoo, pos_capoo, word_num
     screen.fill((255, 255, 255))
     pygame.font.init()
     font = pygame.font.Font("arial.ttf", 40)
@@ -70,7 +72,7 @@ def paint(word, color, xx, yy, score, combo):
         if (len(sprite) > 0):
             sprite = [sp for sp in sprite if (sp[1] // TPP) < len(gif[sp[0]])]
 
-    for i in range(0,12):
+    for i in range(0,word_num):
         fontRead = font.render(chr(word[i]-32),True,color[i])
         scoreShow = font.render("score:%s"%score,True,(255,0,0))
         comboShow = font.render("combo x%s"%combo, True, (255,0,0))
