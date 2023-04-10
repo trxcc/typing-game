@@ -74,7 +74,6 @@ def init():
         state.append(True)
     for gifFile in gifList.gif_list:
         gifName = gifFile[0]
-        print(gifName)
         index = 1
         gif[gifName] = []
         while os.path.isfile(f"./pic/pic_{gifName}/{gifName}_{index}.png"):
