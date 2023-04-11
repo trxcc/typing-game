@@ -65,7 +65,9 @@ def new_word(idx, col):
 
 
 def out_of_limit(x, y):
-    return (x < -50 or x > MAPX + 50) or (y < -50 or y > MAPY)
+    # TODO
+    return False
+    # return (x < -50 or x > MAPX + 50) or (y < -50 or y > MAPY)
 
 
 def hit_word(index):
