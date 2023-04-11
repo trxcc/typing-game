@@ -42,7 +42,7 @@ speed = []
 state = []
 
 
-acc = 0.01 # 1 unit per tick square
+acc = 0 # 1 unit per tick square
 
 score = 0
 combo = 0
@@ -86,8 +86,8 @@ def action():
         if event.type == pygame.QUIT:
             sys.exit()
         if event.type == pygame.KEYDOWN:
-            max_deep = -1
-            max_idx = -1
+            max_depth = -1
+            max_index = -1
             key = event.key
             for i in range(0,12):
                 '''
@@ -103,15 +103,15 @@ def action():
                 注意: i的取值在range(0, 12), 即屏幕上同一时间最多只有12个字母
                 '''
                 if key == word[i] and state[i] == True:
-                    if max_deep < yy[i]:
-                        max_deep = yy[i]
-                        max_idx = i
+                    if max_depth < yy[i]:
+                        max_depth = yy[i]
+                        max_index = i
                 pass
                        
-            if max_idx >= 0:
-                speed[max_idx] = hit.hit(graphic.sprite, (xx[max_idx], yy[max_idx]), speed[max_idx], acc)
-                color[max_idx] = graphic.get_green()
-                state[max_idx] = False
+            if max_index >= 0:
+                speed[max_index] = hit.hit(graphic.sprite, (xx[max_index], yy[max_index]), speed[max_index])
+                color[max_index] = graphic.get_green()
+                state[max_index] = False
                 combo += 1
                 score += min(combo, 20)
             else:
