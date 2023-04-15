@@ -1,5 +1,22 @@
-# typing-game
+## Capoo的打字世界
 
-A little typing game with capoo, for NJUAI Python course.
+欢迎来到**猫猫虫Capoo**的打字世界! 这是一个带有激励效应的打字游戏, 随着你连击字母次数的增加, 左下角的猫猫虫将呈现出不一样的打字状态!
+> 按照你的连击水平, 猫猫虫呈现不一样的打字状态. 具体可以参考``/pic/gif/cappo_miss.gif``, ``/pic/gif/cappo_lazy.gif``, ``/pic/gif/capoo_easy.gif``, ``/pic/gif_capoo_crazy.gif``.
 
-For full version, switch to the 'full-version' branch.
+### 为capoo打开打字游戏的大门
+
+1. 为运行该打字游戏, 请确保你的Python已安装有``pygame``包. 
+2. 若无, 可通过``win+r``得到弹窗, 在弹窗中输入``cmd``进入命令行交互界面.  
+3. 在命令行中输入``pip install pygame``, 等待安装即可
+4. 安装``pygame``后, 运行``main.py``即可加入capoo的打字世界!
+
+**注意: 该项目仅供教学使用, 请勿外传**
+
+- 首先介绍一下文件结构
+  - ``main.py``是程序运行的主文件
+  - ``graphic.py``是程序显示与画图相关的文件, 内部封装有一些画图函数, **请勿修改**, 但你可以试试
+  - ``hit.py``是处理打字命中效果的文件, **请勿修改**, 但你可以试试
+  - ``gifList.py``是存储capoo不同形态的文件, 直接存在列表``gif_list``中. **请勿修改**, 建议你别试
+  - ``gif2pic.py``是将``/pic/gif``文件夹中的gif动图按帧数分解为单张的``png``图片, 分别存储在``/pic``对应名字的文件夹中. **请勿修改**, 不能试
+  - ``arial.ttf``是字体文件, **请勿删除或移动位置**
+

@@ -36,11 +36,11 @@ def init(MAPX, MAPY, MAX_WORD_NUM):
     capoo = ["capoo_hello", 0, pos_capoo]
 
 
-def get_not_green():
+def get_initial_color():
     return get_color(rlim=deep_color_lim, glim=light_color_lim, blim=deep_color_lim)
 
 
-def get_green():
+def get_hit_color():
     return get_color(rlim=light_color_lim, glim=deep_color_lim, blim=light_color_lim)
 
 
