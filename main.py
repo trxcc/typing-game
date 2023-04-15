@@ -48,7 +48,7 @@ def init():
     for i in range(0,MAX_WORD_NUM):
         # 初始化MAX_WORD_NUM个字母, 并填充对应列表.
         # 注意, 一个字母的大小是 50 * 50
-        word.append(97 + i)
+        word.append(random.randint(97, 122))
         color.append(graphic.get_initial_color())
         xx.append(random.randint(200,700))
         yy.append(random.randint(-50,0))
